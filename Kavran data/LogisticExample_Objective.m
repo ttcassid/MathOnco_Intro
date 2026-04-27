@@ -21,7 +21,7 @@ PA.DrugConc = 0;
 %% Solve the Treated ODE system
 [sol1Treated] =    FixedDoseDynamicsTreated(TotalTime,TreatCapacityIC,PA); % FixedTherapyDynamicsTreated(TotalTime,TreatCapacityIC,PA); %
 TumourFinalSize(1) =  deval(sol1Treated,tf,1);
-Obj(1) = ( log10(TumourFinalSize(1)) - log10(DoseResponseVec(1)) ).^2;
+Obj(1) = ( log10(1) - log10(DoseResponseVec(1)) ).^2;
 
 %% Solve the ODE systems for non-zero dose
 for ii = 2:  NDataPoints
@@ -39,7 +39,7 @@ function [sol] = FixedDoseDynamicsTreated(totaltime,IC,PA) %ODE model with thera
 opts = odeset('RelTol',1e-7,'AbsTol',1e-7,'MaxStep',1e-2);
 sol = ode15s(@FixedTherapyDynamics,totaltime,IC,opts);
     function dydt = FixedTherapyDynamics(t,y);
-        dydt(1) = PA.rPop.*(1 - (y(1))./PA.CarryingCapacity ) -  (PA.gammaMax).*(PA.DrugConc./(PA.DrugConc+PA.TreatmentHalfEffect) ).*y(1) ; ; %Differential equation for N(t)
+        dydt(1) = PA.rPop.*y(1).*(1 - (y(1))./PA.CarryingCapacity ) -  (PA.gammaMax).*(PA.DrugConc./(PA.DrugConc+PA.TreatmentHalfEffect) ).*y(1) ; ; %Differential equation for N(t)
         dydt = dydt';
     end
 
