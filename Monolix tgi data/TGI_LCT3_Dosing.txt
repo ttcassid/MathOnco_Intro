@@ -1,0 +1,58 @@
+DESCRIPTION:
+TGI model.
+
+Model for TS (tumor size):
+ - Tumor growth follows a hybrid of the Simeoni and logistic models. This model combines exponential, linear and logistic growths. When psi is large enough (e.g. psi = 20), this model is an approximation of the exponential-linear model which describes tumor growth as having an initial exponential growth phase (with exponential growth rate kge) followed by a linear growth phase (with linear growth rate kgl), and a growth-saturated phase as the tumor reaches its carrying capacity (TSmax). The initial tumor size is TS0.
+
+Tumor growth inhibition model:
+ - Tumor growth inhibition modeled using a log-kill killing hypothesis where the treatment effect is linearly dependent on the drug exposure (kkill*EXPOSURE).
+ - A delay in cell death has been added by the introduction of 3 cell populations (TS1-TS3) which represent various stages of cell death. The length of this delay is determined by the parameter tau.
+
+Treatment:
+The treatment effect is based on EXPOSURE, which is the pharmacokinetics of the treatment modeled using the pkmodel macro.
+
+Initial integration time is not fixed and is therefore the first dose or observation time for each subject. It can be fixed with "t_0 = ..." in the section EQUATION.
+
+[LONGITUDINAL]
+input = {k, V, TS0, kge, kgl, TSmax, kkill, tau,k1}
+
+PK:
+depot(target=A, p=1)
+
+EQUATION:
+odeType=stiff
+
+;initial conditions:
+;t_0 = 0    ;this should be uncommented if the initial time is 0 for all subjects
+TS_0 = TS0
+TS1_0 = 0
+TS2_0 = 0
+TS3_0 = 0
+A1_0 = 0
+
+psi = 20    ; psi is fixed to 20 to ensure a fast switch between exponential growth and linear growth
+
+
+
+K = (kkill*A)
+
+TotalTS = TS+TS1+TS2+TS3
+
+;Saturation for TS at 1e12 to avoid infinite values
+if TS>1e12
+  TSDynamics = 0
+  TS1Dynamics = 0
+else
+  TSDynamics = (kge*TS*(1-TotalTS/TSmax)/(1+(kge/kgl*max(0,TotalTS))^psi)^(1/psi))-K*TS
+  TS1Dynamics = K*TS
+end
+
+ddt_TS = TSDynamics
+
+ddt_TS1 = TS1Dynamics-TS1/tau
+ddt_TS2 = (TS1-TS2)/tau
+ddt_TS3 = (TS2-TS3)/tau
+
+ddt_A = -k1*A
+OUTPUT:
+output = {TotalTS}

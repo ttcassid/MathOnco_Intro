@@ -1,0 +1,43 @@
+DESCRIPTION: Model for chemotherapy induced neutropenia 
+
+[LONGITUDINAL]
+input = {k10,k12,k13,k21,k31,k24,k42, kProl, Emax, EC50Exp, Circ0,kTr,kCirc,gammaExp};   
+
+PK:
+
+depot(type=1, target=C1) 
+
+EQUATION:
+odeType = stiff
+
+t0 = 0
+EC50 = 10^EC50Exp
+gamma = 10^gammaExp
+
+Prol_0 = kCirc*Circ0/kProl ; 
+T1_0 = kCirc*Circ0/kTr
+T2_0 = kCirc*Circ0/kTr
+T3_0 = kCirc*Circ0/kTr
+Circ_0 = Circ0
+C1_0 = 0
+C2_0 = 0
+C3_0 = 0
+C4_0 = 0
+
+
+;differential equations
+
+ddt_Prol = kProl*Prol*(1-Emax*C1/(C1+EC50))*(Circ0/Circ)^(gamma) - kProl*Prol
+ddt_T1 = kProl*Prol - kTr*T1;  
+ddt_T2 = kTr*(T1-T2)
+ddt_T3 = kTr*(T2-T3)
+ddt_Circ = kTr*T3 - kCirc*Circ
+ddt_C1 = -(k10+k12+k13)*C1 + k21*C2 + k31*C3
+ddt_C2 = -(k21+k24)*C2 + k12*C1+k42*C4
+ddt_C3 = -k31*C3 +k13*C1
+ddt_C4 = k24*C2-k42*C4
+
+ValueNeutrophil = Circ;   
+
+ OUTPUT:
+ output = ValueNeutrophil ;  

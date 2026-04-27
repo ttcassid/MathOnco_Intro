@@ -1,0 +1,80 @@
+<DATAFILE>
+
+[FILEINFO]
+file={path='../../../lixoft/monolix/monolix2024R1/demos/8.case_studies/data/tgi_data.csv'}
+delimiter = comma
+header={id, time, y, amount}
+
+[CONTENT]
+id = {use=identifier}
+time = {use=time}
+y = {use=observation, type=continuous}
+amount = {use=amount}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {TS0_pop, omega_TS0, TSmax_pop, omega_TSmax, kge_pop, omega_kge, kgl_pop, omega_kgl, kkill_pop, omega_kkill, k1_pop, omega_k1, TauMax_pop, omega_TauMax, gammaRate_pop, omega_gammaRate, gammaShape_pop, omega_gammaShape}
+
+DEFINITION:
+TS0 = {distribution=logNormal, typical=TS0_pop, sd=omega_TS0}
+TSmax = {distribution=logNormal, typical=TSmax_pop, sd=omega_TSmax}
+kge = {distribution=logNormal, typical=kge_pop, sd=omega_kge}
+kgl = {distribution=logNormal, typical=kgl_pop, sd=omega_kgl}
+kkill = {distribution=logNormal, typical=kkill_pop, sd=omega_kkill}
+k1 = {distribution=logNormal, typical=k1_pop, sd=omega_k1}
+TauMax = {distribution=logNormal, typical=TauMax_pop, sd=omega_TauMax}
+gammaRate = {distribution=logNormal, typical=gammaRate_pop, sd=omega_gammaRate}
+gammaShape = {distribution=logNormal, typical=gammaShape_pop, sd=omega_gammaShape}
+
+[LONGITUDINAL]
+input = {a, b}
+
+file = 'TGI_PseudoSpectral_Dosing.txt'
+
+DEFINITION:
+y = {distribution=normal, prediction=TotalTS, errorModel=combined1(a, b)}
+
+<FIT>
+data = 'y'
+model = y
+
+<PARAMETER>
+TS0_pop = {value=25, method=MLE}
+TSmax_pop = {value=1000, method=MLE}
+TauMax_pop = {value=1, method=MLE}
+a = {value=1, method=MLE}
+b = {value=0.3, method=MLE}
+c = {value=1, method=FIXED}
+gammaRate_pop = {value=1, method=MLE}
+gammaShape_pop = {value=1, method=MLE}
+k1_pop = {value=1, method=MLE}
+kge_pop = {value=25, method=MLE}
+kgl_pop = {value=2, method=MLE}
+kkill_pop = {value=1, method=MLE}
+omega_TS0 = {value=1, method=MLE}
+omega_TSmax = {value=1, method=MLE}
+omega_TauMax = {value=1, method=MLE}
+omega_gammaRate = {value=1, method=MLE}
+omega_gammaShape = {value=1, method=MLE}
+omega_k1 = {value=1, method=MLE}
+omega_kge = {value=1, method=MLE}
+omega_kgl = {value=1, method=MLE}
+omega_kkill = {value=1, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(method = StochasticApproximation)
+logLikelihood(method = ImportanceSampling)
+
+[PLOTS]
+run = true
+plots = {indfits = {selected = true}, parameterdistribution = {selected = true}, obspred = {selected = true}, covariancemodeldiagnosis = {selected = true}, covariatemodeldiagnosis = {selected = true}, vpc = {selected = true}, npc = {selected = true}, residualsscatter = {selected = true}, residualsdistribution = {selected = true}, randomeffects = {selected = true}, blq = {selected = true}, predictiondistribution = {selected = true}, likelihoodcontribution = {selected = true}, categorizedoutput = {selected = true}, saemresults = {selected = true}, condmeanresults = {selected = true}, fisher = {selected = true}, likelihoodresults = {selected = true}}
+
+[SETTINGS]
+GLOBAL:
+exportpath = 'tgi_project_LCT3'
+

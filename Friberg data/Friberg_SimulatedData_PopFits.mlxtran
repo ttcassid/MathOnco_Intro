@@ -1,0 +1,85 @@
+<DATAFILE>
+
+[FILEINFO]
+file='Generated_NeutrophilData.csv'
+delimiter = comma
+header={PTID, Time, Obs, Amount, Event}
+
+[CONTENT]
+PTID = {use=identifier}
+Time = {use=time}
+Obs = {use=observation, type=continuous}
+Amount = {use=amount}
+Event = {use=eventidentifier}
+
+[SETTINGS]
+dataType = {'Obs'=plasma}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {Circ0_pop, omega_Circ0, k10_pop, k12_pop, k13_pop, k21_pop, k24_pop, k31_pop, k42_pop, kCirc_pop, kProl_pop, omega_kProl, kTr_pop, omega_kTr, EC50Exp_pop, omega_EC50Exp, Emax_pop, gammaExp_pop}
+
+DEFINITION:
+Circ0 = {distribution=logNormal, typical=Circ0_pop, sd=omega_Circ0}
+k10 = {distribution=logNormal, typical=k10_pop, no-variability}
+k12 = {distribution=logNormal, typical=k12_pop, no-variability}
+k13 = {distribution=logNormal, typical=k13_pop, no-variability}
+k21 = {distribution=logNormal, typical=k21_pop, no-variability}
+k24 = {distribution=logNormal, typical=k24_pop, no-variability}
+k31 = {distribution=logNormal, typical=k31_pop, no-variability}
+k42 = {distribution=logNormal, typical=k42_pop, no-variability}
+kCirc = {distribution=logNormal, typical=kCirc_pop, no-variability}
+kProl = {distribution=logNormal, typical=kProl_pop, sd=omega_kProl}
+kTr = {distribution=logNormal, typical=kTr_pop, sd=omega_kTr}
+EC50Exp = {distribution=normal, typical=EC50Exp_pop, sd=omega_EC50Exp}
+Emax = {distribution=logNormal, typical=Emax_pop, no-variability}
+gammaExp = {distribution=normal, typical=gammaExp_pop, no-variability}
+
+[LONGITUDINAL]
+input = {b}
+
+file = 'Friberg_Neutropenia_CHOP14Chemo.txt'
+
+DEFINITION:
+Obs = {distribution=logNormal, prediction=ValueNeutrophil, errorModel=proportional(b)}
+
+<FIT>
+data = 'Obs'
+model = Obs
+
+<PARAMETER>
+Circ0_pop = {value=4.1943124, method=MLE}
+EC50Exp_pop = {value=1.4066509, method=MLE}
+Emax_pop = {value=1, method=FIXED}
+b = {value=0.3752723, method=MLE}
+c = {value=1, method=FIXED}
+gammaExp_pop = {value=-1.5838445, method=MLE}
+k10_pop = {value=32.07, method=FIXED}
+k12_pop = {value=90.27500000000001, method=FIXED}
+k13_pop = {value=8.289999999999999, method=FIXED}
+k21_pop = {value=18.22, method=FIXED}
+k24_pop = {value=9.220000000000001, method=FIXED}
+k31_pop = {value=0.699, method=FIXED}
+k42_pop = {value=62.56, method=FIXED}
+kCirc_pop = {value=1.1323823, method=MLE}
+kProl_pop = {value=5.9179355, method=MLE}
+kTr_pop = {value=0.6946544, method=MLE}
+omega_Circ0 = {value=0.1658203, method=MLE}
+omega_EC50Exp = {value=0.1758827, method=MLE}
+omega_kProl = {value=0.489001, method=MLE}
+omega_kTr = {value=0.4121149, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(method = Linearization)
+logLikelihood(method = Linearization)
+plotResult(method = {indfits, parameterdistribution, covariancemodeldiagnosis, covariatemodeldiagnosis, obspred, vpc, residualsscatter, residualsdistribution, randomeffects, saemresults })
+
+[SETTINGS]
+GLOBAL:
+exportpath = 'Friberg_SimulatedData_PopFits'
+
