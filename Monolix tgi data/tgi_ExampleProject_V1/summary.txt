@@ -1,0 +1,49 @@
+********************************************************************************
+*                        tgi_ExampleProject_V1.mlxtran                         *
+*                         at                                                   *
+*                        Monolix version : 2024R1                              *
+********************************************************************************
+
+
+ESTIMATION OF THE POPULATION PARAMETERS ________________________________________
+
+Fixed Effects ----------------------------
+k_pop       :                         1.23
+V_pop       :                       0.0151
+TS0_pop     :                         50.7
+kge_pop     :                         0.81
+kgl_pop     :                        0.426
+TSmax_pop   :                          764
+kkill_pop   :                         16.1
+tau_pop     :                         3.36
+k1_pop      :                          195
+
+Standard Deviation of the Random Effects -
+omega_k     :                         10.2
+omega_V     :                          3.1
+omega_TS0   :                        0.323
+omega_kge   :                         3.93
+omega_kgl   :                         0.52
+omega_TSmax :                          1.4
+omega_kkill :                        0.361
+omega_tau   :                        0.837
+omega_k1    :                        0.447
+
+Error Model Parameters -------------------
+a           :                        0.364
+b           :                       0.0616
+
+Elapsed time (seconds):  3.5e+02
+Exploratory phase iterations:      171 (Autostop)
+Smoothing phase iterations:        176 (Autostop)
+
+ _______________________________________________________________________________
+
+
+
+
+DATASET INFORMATION
+Number of individuals: 21
+Number of observations (y): 255
+Number of doses: 113
+

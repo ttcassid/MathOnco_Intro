@@ -1,0 +1,80 @@
+<DATAFILE>
+
+[FILEINFO]
+file={path='../../tgi_data_pseudo.csv'}
+delimiter = comma
+header={id, time, y, amount}
+
+[CONTENT]
+id = {use=identifier}
+time = {use=time}
+y = {use=observation, type=continuous}
+amount = {use=amount}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {TS0_pop, omega_TS0, TSmax_pop, omega_TSmax, V_pop, omega_V, k_pop, omega_k, k1_pop, omega_k1, kge_pop, omega_kge, kgl_pop, omega_kgl, kkill_pop, omega_kkill, tau_pop, omega_tau}
+
+DEFINITION:
+TS0 = {distribution=logNormal, typical=TS0_pop, sd=omega_TS0}
+TSmax = {distribution=logNormal, typical=TSmax_pop, sd=omega_TSmax}
+V = {distribution=logNormal, typical=V_pop, sd=omega_V}
+k = {distribution=logNormal, typical=k_pop, sd=omega_k}
+k1 = {distribution=logNormal, typical=k1_pop, sd=omega_k1}
+kge = {distribution=logNormal, typical=kge_pop, sd=omega_kge}
+kgl = {distribution=logNormal, typical=kgl_pop, sd=omega_kgl}
+kkill = {distribution=logNormal, typical=kkill_pop, sd=omega_kkill}
+tau = {distribution=logNormal, typical=tau_pop, sd=omega_tau}
+
+[LONGITUDINAL]
+input = {a, b}
+
+file = '../../TGI_LCT3_Dosing.txt'
+
+DEFINITION:
+y = {distribution=normal, prediction=TotalTS, errorModel=combined1(a, b)}
+
+<FIT>
+data = 'y'
+model = y
+
+<PARAMETER>
+TS0_pop = {value=56.93, method=MLE}
+TSmax_pop = {value=64048, method=MLE}
+V_pop = {value=0.0158, method=MLE}
+a = {value=1, method=MLE}
+b = {value=0.3, method=MLE}
+c = {value=1, method=FIXED}
+k1_pop = {value=234.3, method=MLE}
+k_pop = {value=0.0931, method=MLE}
+kge_pop = {value=4.075, method=MLE}
+kgl_pop = {value=0.225, method=MLE}
+kkill_pop = {value=12.72, method=MLE}
+omega_TS0 = {value=1, method=MLE}
+omega_TSmax = {value=1, method=MLE}
+omega_V = {value=1, method=MLE}
+omega_k = {value=1, method=MLE}
+omega_k1 = {value=1, method=MLE}
+omega_kge = {value=1, method=MLE}
+omega_kgl = {value=1, method=MLE}
+omega_kkill = {value=1, method=MLE}
+omega_tau = {value=1, method=MLE}
+tau_pop = {value=1.888, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(run = false,method = StochasticApproximation)
+logLikelihood(run = false,method = ImportanceSampling)
+
+[PLOTS]
+run = true
+plots = {indfits = {selected = true}, parameterdistribution = {selected = true}, obspred = {selected = true}, covariancemodeldiagnosis = {selected = true}, covariatemodeldiagnosis = {selected = true}, vpc = {selected = true}, residualsscatter = {selected = true}, residualsdistribution = {selected = true}, randomeffects = {selected = true}, saemresults = {selected = true}}
+
+[SETTINGS]
+GLOBAL:
+exportpath = '../'
+
